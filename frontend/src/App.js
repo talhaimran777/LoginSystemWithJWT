@@ -1,10 +1,8 @@
-import logo from './logo.svg';
-import './App.css';
-
+import Login from './Components/Login';
 function App() {
   return (
     <div className='App'>
-      <h1>Loging System with JWT</h1>
+      <Login />
     </div>
   );
 }
