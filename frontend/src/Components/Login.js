@@ -1,8 +1,22 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 class Login extends Component {
   onChangeHandler = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { email, password } = this.state;
+
+    axios
+      .post('/login', { email: email, password: password })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
+
   state = {
     email: '',
     password: '',
@@ -10,10 +24,9 @@ class Login extends Component {
 
   render() {
     const { email, password } = this.state;
-    console.log(email, password);
 
     return (
-      <form action='/login' method='POST'>
+      <form onSubmit={this.handleSubmit}>
         <label htmlFor='email'>Enter Email</label>
         <input
           onChange={this.onChangeHandler}

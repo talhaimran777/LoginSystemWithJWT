@@ -1,12 +1,16 @@
 const express = require('express');
 const app = express();
 
+// Using a middleware
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });
 
 app.post('/login', (req, res) => {
-  res.send('LOGIN RECIEVED');
+  console.log(req.body);
+  res.json(req.body);
 });
 
 module.exports = app;
