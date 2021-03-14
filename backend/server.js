@@ -2,8 +2,11 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const app = express();
 const User = require('./models/User');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs');
 
-// const jwt = require('jsonwebtoken');
+dotenv.config();
 
 // USING A MIDDLEWARE TO PUT BODY IN REQ OBJECT
 app.use(express.json());
@@ -38,54 +41,46 @@ app.post(
       try {
         let user = await User.findOne({ email });
 
-        // IF THE USER IS NOT PRESENT
+        // IF EMAIL IS NOT TAKEN
         if (user === null) {
           // IF NAME NOT PRESENT MAKE A DEFAULT NAME
           if (!name) {
             name = 'default';
           }
-          // PUT THIS USER IN THE DB
 
+          // HASH THE PASSWORD
+          let salt = bcrypt.genSaltSync(10);
+          let hashedPassword = bcrypt.hashSync(password, salt);
+
+          // PUT THIS USER IN THE DB
           let user = {
             name,
             email,
-            password,
+            password: hashedPassword,
           };
 
+          // CREATE A NEW USER DOCUMENT IN THE DB
           let createdUser = await User.create(user);
+
+          // ON SUCCESS
           if (createdUser) {
-            res.statusCode = 201;
-            res.json({
-              status: 'Success',
-              data: createdUser,
-            });
+            const { PRIVATE_KEY } = process.env;
+            console.log(PRIVATE_KEY);
+            // GENERATE A TOKEN & SENT IT AS A JSON
+            jwt.sign(
+              { user: createdUser },
+              PRIVATE_KEY,
+              { expiresIn: '1hr' },
+              function (err, token) {
+                if (token) {
+                  res.statusCode = 201;
+                  return res.json(token);
+                }
+              }
+            );
           }
-
-          // User.create(user)
-          //   .then((user) => {
-          //     res.statusCode = 201;
-          //     res.json(user);
-          //   })
-          //   .catch((err) => {
-          //     res.statusCode = 400;
-
-          //     res.json({
-          //       status: 'Failed!',
-          //       message: 'Bad Request!',
-          //     });
-          //   });
-
-          // try {
-          // } catch (err) {
-          //   res.statusCode = 500;
-
-          //   res.json({
-          //     status: 'Failed',
-          //     message: 'Internal server error!',
-          //     data: err,
-          //   });
-          // }
         } else {
+          // ON FAILURE
           res.statusCode = 400;
           res.json({
             status: 'Failed',
@@ -93,8 +88,8 @@ app.post(
           });
         }
       } catch (err) {
+        // CATCHING INTERNAL SERVER ERROR
         res.statusCode = 500;
-
         res.json({
           status: 'Failed',
           message: 'Internal server error!',

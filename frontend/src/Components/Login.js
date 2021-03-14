@@ -26,28 +26,34 @@ class Login extends Component {
     const { email, password } = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label htmlFor='email'>Enter Email</label>
-        <input
-          onChange={this.onChangeHandler}
-          type='text'
-          name='email'
-          autoComplete='false'
-          value={email}
-        />
-
-        <br />
-        <label htmlFor='email'>Enter Password</label>
-        <input
-          onChange={this.onChangeHandler}
-          type='password'
-          name='password'
-          autoComplete='false'
-          value={password}
-        />
-        <br />
-        <button type='submit'>Login</button>
-      </form>
+      <div className='row'>
+        <div className='col col-md-8 col-lg-6 col-xl-5 mx-auto'>
+          <h1 className='mb-4'>Login Form</h1>
+          <form onSubmit={this.handleSubmit}>
+            <label htmlFor='email'>Enter Email</label>
+            <input
+              className='form-control'
+              onChange={this.onChangeHandler}
+              type='text'
+              name='email'
+              autoComplete='false'
+              value={email}
+            />
+            <label htmlFor='email'>Enter Password</label>
+            <input
+              className='form-control mb-3'
+              onChange={this.onChangeHandler}
+              type='password'
+              name='password'
+              autoComplete='false'
+              value={password}
+            />
+            <button className='btn btn-primary btn-block w-100' type='submit'>
+              login
+            </button>
+          </form>
+        </div>
+      </div>
     );
   }
 }

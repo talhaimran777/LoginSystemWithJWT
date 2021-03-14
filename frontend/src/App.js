@@ -3,8 +3,8 @@ import Signup from './Components/Signup';
 function App() {
   return (
     <div className='App container py-5'>
-      {/* <Signup /> */}
-      <Login />
+      <Signup />
+      {/* <Login /> */}
     </div>
   );
 }
