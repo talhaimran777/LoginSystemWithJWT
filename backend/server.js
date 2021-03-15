@@ -11,15 +11,34 @@ dotenv.config();
 // USING A MIDDLEWARE TO PUT BODY IN REQ OBJECT
 app.use(express.json());
 
+// AUTH MIDDLEWARE
+let auth = async (req, res, next) => {
+  const token = req.headers['x-auth-token'];
+
+  // IF NO TOKEN FOUND
+  if (!token)
+    return res
+      .status(401)
+      .json({ status: 'Failed!', message: 'Access Denied!' });
+
+  // VERIFY THE TOKEN HERE
+  try {
+    const decoded = await jwt.verify(token, process.env.PRIVATE_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(400).json({ status: 'Failed', message: 'Invalid Token!' });
+  }
+};
+
+// PRIVATE ROUTE
+app.get('/privacy', auth, (req, res) => {
+  res.send('This is a private route!');
+});
+
 app.get('/', (req, res) => {
   res.send('Server is running!');
 });
-
-// let insertUser = async () => {};
-
-// app.post('/login', (req, res) => {});
-
-app.use;
 
 app.post(
   '/signup',
